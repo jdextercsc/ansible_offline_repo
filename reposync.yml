@@ -1,0 +1,36 @@
+---
+- name: create offline repos.
+  #hosts: deploy_node
+  hosts: local
+  max_fail_percentage: 0
+
+  tasks:
+    - name: register to RHN
+      redhat_subscription:
+        state: present
+        username: "{{ rhn_user }}"
+        password: "{{ rhn_pass }}"
+        pool: "{{ pool }}"
+
+    - name: enable repos for juno
+      shell: "subscription-manager repos --list-enabled | grep 'Repo ID:   {{ item }}' || subscription-manager repos --enable={{ item }}"
+      with_items: repos
+      register: result
+      changed_when: result.stdout.find('enabled') != -1
+
+    - name: install yum utils
+      yum:
+        name: yum-utils
+        state: present
+
+    - name: create directory structure
+      file:
+        dest: "{{offline_repo_path}}"
+        state: directory
+
+    - name: reposyncs
+      command: reposync
+        -p {{offline_repo_path}}
+        -r {{item}}
+        -n -m
+      with_items: "{{repos}}" 
