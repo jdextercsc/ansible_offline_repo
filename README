@@ -1,0 +1,20 @@
+# Overview
+This play uses the subscription module to register your system to Red Hat, then enables the needed repositories.
+
+Next it downloads a list of rpms that need to be in a custom repo.  It then copies the downloaded rpms to a specified location to be shared out via http as a repo.  Finally it makes a .repo file that will point back to the custom repo.
+
+## Variables
+rhn_pass:  rhn_pass
+rhn_user:  rhn_user
+pool: 'pool name that has access to repositories needed'
+
+repos:
+  - a list
+  - of repos
+  - to download 
+  - from
+
+offline_repo_path: '/root/offline_repo'
+download_repo_path: '/root/download_repo'
+shared_repo_path: '/var/www/html/repo'
+repofile_location: '/root/'
